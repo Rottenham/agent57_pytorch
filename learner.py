@@ -43,7 +43,7 @@ class Learner:
       criterion                 : loss function of embedding classifier
       betas               (list): list of beta which decide weights between intrinsic qvalues and extrinsic qvalues
       gammas              (list): list of gamma which is discount rate
-      eta                (float): coefficient for priority caluclation
+      eta                (float): coefficient for priority calculation
       lamda              (float): coefficient for retrace operation
       burnin_length        (int): length of burnin to calculate qvalues
       unroll_length        (int): length of unroll to calculate qvalues
@@ -72,7 +72,7 @@ class Learner:
         Args:
           env_name             (str): name of environment
           n_frames             (int): number of images to be stacked
-          eta                (float): coefficient for priority caluclation
+          eta                (float): coefficient for priority calculation
           lamda              (float): coefficient for retrace operation
           num_arms             (int): number of multi arms
           burnin_length        (int): length of burnin to calculate qvalues
@@ -141,13 +141,13 @@ class Learner:
 
     def define_network(self):
         """
-        define network and get initial parameter to copy to angents
+        define network and get initial parameter to copy to agents
         """
 
         frame = self.frame_process_func(self.env.reset())
         frames = [frame] * self.n_frames
         
-        # (1, n_frams, 32, 32)
+        # (1, n_frames, 32, 32)
         state = torch.tensor(np.stack(frames, axis=0)[None, ...]).float()
         h = torch.zeros(1, 1, self.in_online_q_network.lstm.hidden_size).float()
         c = torch.zeros(1, 1, self.ex_online_q_network.lstm.hidden_size).float()
@@ -357,7 +357,7 @@ class Learner:
 
     def get_qvalues(self, q_network, h, c):
         """
-        get qvalues from expeiences using specific q network
+        get qvalues from experiences using specific q network
         Args:
           q_network             : network to get Q values
           h       (torch.tensor): LSTM hidden state

@@ -11,7 +11,7 @@ from utils import UCB, create_beta_list, get_preprocess_func, play_episode
 @ray.remote(num_cpus=1)
 class Tester:
     """
-    calculate score to evaluate peformance
+    calculate score to evaluate performance
     Attributes:
       env_name          (str): name of environment
       n_frames          (int): number of images to be stacked

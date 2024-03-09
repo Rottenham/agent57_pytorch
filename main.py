@@ -10,23 +10,24 @@ from agent import Agent
 from tester import Tester
 from buffer import SegmentReplayBuffer
 from learner import Learner
-from utils import seed_evrything
+from utils import seed_everything
 
 
 weight_dir = "result/weights"
 os.makedirs(weight_dir, exist_ok=True)
+
 
 def main(args):
     if os.path.exists("log"):
         shutil.rmtree("log")
     os.makedirs("log")
 
-    seed_evrything(args.seed)
+    seed_everything(args.seed)
     ray.init(ignore_reinit_error=True, local_mode=False)
 
     total_s = time.time()
     in_q_loss_history, ex_q_loss_history, embed_loss_history, lifelong_loss_history, score_history = [], [], [], [], []
-    
+
     learner = Learner.remote(env_name=args.env_name,
                              target_update_period=args.target_update_period,
                              eta=args.eta,
@@ -43,9 +44,10 @@ def main(args):
                              ex_q_clip_grad=args.ex_q_clip_grad,
                              embed_clip_grad=args.embed_clip_grad,
                              lifelong_clip_grad=args.lifelong_clip_grad)
-    
-    in_q_weight, ex_q_weight, embed_weight, trained_lifelong_weight, original_lifelong_weight = ray.get(learner.define_network.remote())
-    
+
+    in_q_weight, ex_q_weight, embed_weight, trained_lifelong_weight, original_lifelong_weight = ray.get(
+        learner.define_network.remote())
+
     # put weights for agents to refer them
     in_q_weight = ray.put(in_q_weight)
     ex_q_weight = ray.put(ex_q_weight)
@@ -72,7 +74,7 @@ def main(args):
                            original_lifelong_weight=original_lifelong_weight)
               for i in range(args.num_agents)]
 
-    replay_buffer = SegmentReplayBuffer(buffer_size=args.buffer_size, weight_expo=args.weight_expo)   
+    replay_buffer = SegmentReplayBuffer(buffer_size=args.buffer_size, weight_expo=args.weight_expo)
 
     tester = Tester.remote(env_name=args.env_name,
                            n_frames=args.n_frames,
@@ -93,11 +95,11 @@ def main(args):
 
     for i in range(args.n_agent_burnin):
         s = time.time()
-        
-        # finised agent, working agents
+
+        # finished agent, working agents
         finished, wip_agents = ray.wait(wip_agents, num_returns=1)
         priorities, segments, pid = ray.get(finished[0])
-        
+
         replay_buffer.add(priorities, segments)
         wip_agents.extend([agents[pid].sync_weights_and_rollout.remote(in_q_weight=in_q_weight,
                                                                        ex_q_weight=ex_q_weight,
@@ -107,7 +109,7 @@ def main(args):
             f.write(f"{i}th Agent's time[sec]: {time.time() - s:.5f}\n")
 
     print("="*100)
-    
+
     minibatchs = [replay_buffer.sample_minibatch(batch_size=args.batch_size) for _ in range(args.update_iter)]
     wip_learner = learner.update_network.remote(minibatchs)
     wip_tester = tester.test_play.remote(in_q_weight=in_q_weight,
@@ -123,7 +125,7 @@ def main(args):
     while learner_cycles <= args.n_learner_cycle:
         agent_cycles += 1
         s = time.time()
-        
+
         # get agent's experience
         finished, wip_agents = ray.wait(wip_agents, num_returns=1)
         priorities, segments, pid = ray.get(finished[0])
@@ -132,17 +134,18 @@ def main(args):
                                                                        ex_q_weight=ex_q_weight,
                                                                        embed_weight=embed_weight,
                                                                        lifelong_weight=trained_lifelong_weight)])
-            
+
         n_segment_added += len(segments)
 
         finished_learner, _ = ray.wait([wip_learner], timeout=0)
 
         if finished_learner:
-            in_q_weight, ex_q_weight, embed_weight, trained_lifelong_weight, indices, priorities, in_q_loss, ex_q_loss, embed_loss, lifelong_loss = ray.get(finished_learner[0])
-            
+            in_q_weight, ex_q_weight, embed_weight, trained_lifelong_weight, indices, priorities, in_q_loss, ex_q_loss, embed_loss, lifelong_loss = ray.get(
+                finished_learner[0])
+
             replay_buffer.update_priority(indices, priorities)
             minibatchs = [replay_buffer.sample_minibatch(batch_size=args.batch_size) for _ in range(args.update_iter)]
-            
+
             wip_learner = learner.update_network.remote(minibatchs)
 
             in_q_weight = ray.put(in_q_weight)
@@ -151,7 +154,8 @@ def main(args):
             trained_lifelong_weight = ray.put(trained_lifelong_weight)
 
             with open(f"log/loss_history.txt", mode="a") as f:
-                f.write(f"{learner_cycles}th results => Agent cycle: {agent_cycles}, Added: {n_segment_added}, InQLoss: {in_q_loss:.4f}, ExQLoss: {ex_q_loss:.4f}, EmbeddingLoss: {embed_loss:.4f}, LifeLongLoss: {lifelong_loss:.8f} \n")
+                f.write(f"{learner_cycles}th results => Agent cycle: {agent_cycles}, Added: {n_segment_added}, InQLoss: {
+                        in_q_loss:.4f}, ExQLoss: {ex_q_loss:.4f}, EmbeddingLoss: {embed_loss:.4f}, LifeLongLoss: {lifelong_loss:.8f} \n")
 
             in_q_loss_history.append((learner_cycles-1, in_q_loss))
             ex_q_loss_history.append((learner_cycles-1, ex_q_loss))
@@ -163,7 +167,7 @@ def main(args):
                 score_history.append((learner_cycles-args.switch_test_cycle, test_score))
                 with open(f"log/score_history.txt", mode="a") as f:
                     f.write(f"Cycle: {learner_cycles}, Score: {test_score}\n")
-                    
+
             wip_tester = tester.test_play.remote(in_q_weight=in_q_weight,
                                                  ex_q_weight=ex_q_weight,
                                                  embed_weight=embed_weight,
@@ -248,7 +252,7 @@ if __name__ == '__main__':
     parser.add_argument('--L', default=5, type=int)
     parser.add_argument('--num_arms', default=32, type=int)
     # Base
-    parser.add_argument('--seed', default=0, type=int)    
+    parser.add_argument('--seed', default=0, type=int)
     parser.add_argument('--gamma', default=0.997, type=float)
     parser.add_argument('--eta', default=0.9, type=float)
     parser.add_argument('--lamda', default=0.95, type=float)

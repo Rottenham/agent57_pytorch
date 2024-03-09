@@ -35,7 +35,7 @@ class Agent:
       betas              (list): list of beta which decide weights between intrinsic qvalues and extrinsic qvalues
       gammas             (list): list of gamma which is discount rate
       epsilon           (float): coefficient for epsilon greedy
-      eta               (float): coefficient for priority caluclation
+      eta               (float): coefficient for priority calculation
       lamda             (float): coefficient for retrace operation
       burnin_length       (int): length of burnin to calculate qvalues
       unroll_length       (int): length of unroll to calculate qvalues
@@ -71,7 +71,7 @@ class Agent:
           env_name            (str): name of environment
           n_frames            (int): number of images to be stacked
           epsilon           (float): coefficient for epsilon soft-max
-          eta               (float): coefficient for priority caluclation
+          eta               (float): coefficient for priority calculation
           lamda             (float): coefficient for retrace operation
           burnin_length       (int): length of burnin to calculate qvalues
           unroll_length       (int): length of unroll to calculate qvalues
@@ -131,7 +131,7 @@ class Agent:
           lifelong_weight : weight of lifelong network
         Returns:
           priority  (list): priority of segments when pulling segments from sum tree
-          segments        : parts of expecimences
+          segments        : parts of experiences
           self.pid        : process id
         """
 
@@ -215,7 +215,7 @@ class Agent:
 
     def get_qvalues(self, q_network, h, c):
         """
-        get qvalues from expeiences using q network
+        get qvalues from experiences using q network
         Args:
           q_network             : network to get Q values
           h       (torch.tensor): LSTM hidden state

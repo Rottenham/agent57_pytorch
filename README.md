@@ -4,11 +4,11 @@ This repository contains unofficial code reproducing Agent57, which outperformed
 # Directory File
 1. **agent.py**
     
-    define agent to play a supecific environment.
+    define agent to play a specific environment.
 
 2. **buffer.py**
 
-    define buffer to store experiences with priorites.
+    define buffer to store experiences with priorities.
 
 3. **learner.py**
 

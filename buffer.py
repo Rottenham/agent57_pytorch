@@ -90,7 +90,7 @@ class SegmentReplayBuffer:
       buffer_size     [int]: size of buffer
       priorities           : SumTree object to determine priority
       segment_buffer [list]: buffer of segment which size is buffer_size
-      weight_expo   [float]: exponetial value to smooth weights
+      weight_expo   [float]: exponential value to smooth weights
       eta [float]          : coefficient for reduce priority
       count [int]          : index of priorities list
       full [bool]          : flag whether segment buffer is full or not
@@ -100,7 +100,7 @@ class SegmentReplayBuffer:
         """
         Args
           buffer_size    [int]: size of buffer
-          weight_expo  [float]: exponetial value to smooth weights
+          weight_expo  [float]: exponential value to smooth weights
           eta [float, Optical]: coefficient for reduce priority
         """
         

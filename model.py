@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-# Convolutional Encording
+# Convolutional Encoding
 class ConvEncoder(nn.Module):
     """
     Encoder with convolution
@@ -32,7 +32,7 @@ class ConvEncoder(nn.Module):
         Args:
           x (torch.tensor): input [b, n_frames, 84, 84]
         Returns
-          x (torch.tensor): ouput [b, units]
+          x (torch.tensor): output [b, units]
         """
         
         x = F.relu(self.conv1(x))  # (b, 32, 20, 20)
@@ -129,7 +129,7 @@ class EmbeddingNet(nn.Module):
         Args:
           input (torch.tensor): state [b, n_frames, 84, 84]
         Returns:
-          embeded state [b, emebed_units]
+          embeded state [b, embed_units]
         """
         
         return F.relu(self.conv_encoder(inputs))
@@ -154,7 +154,7 @@ class EmbeddingClassifer(nn.Module):
     def forward(self, input1, input2):
         """
         Args:
-          embeded state (torch.tensor): state [b, emebed_units]
+          embeded state (torch.tensor): state [b, embed_units]
         Returns:
           action probability [b, action_space]
         """
