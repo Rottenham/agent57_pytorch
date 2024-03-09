@@ -287,7 +287,7 @@ class Learner:
           segments: a coherent body of experience of some length
         """
 
-        self.states, self.actions, self.in_rewards, self.ex_rewards, self.dones, self.j, self.next_states, in_h0, in_c0, ex_h0, ex_c0, \
+        self.states, self.actions, self.ex_rewards, self.in_rewards, self.dones, self.j, self.next_states, in_h0, in_c0, ex_h0, ex_c0, \
             self.prev_in_rewards, self.prev_ex_rewards, self.prev_actions = segments2contents(segments, burnin_len=self.burnin_len, is_grad=True, device=self.device)
 
         self.in_online_q_network.train()

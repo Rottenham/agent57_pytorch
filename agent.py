@@ -190,7 +190,7 @@ class Agent:
 
         segments = episode_buffer.pull_segments()
         
-        self.states, self.actions, self.in_rewards, self.ex_rewards, self.dones, self.j, self.next_states, \
+        self.states, self.actions, self.ex_rewards, self.in_rewards, self.dones, self.j, self.next_states, \
             in_h0, in_c0, ex_h0, ex_c0, self.prev_in_rewards, self.prev_ex_rewards, self.prev_actions = segments2contents(segments, self.burnin_len)
 
         # (unroll_len+1, batch_size, action_space)

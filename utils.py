@@ -383,13 +383,13 @@ def play_episode(frame_process_func,
         else:
             if lives != info["ale.lives"] or done:  # done==True when lose life
                 lives = info["ale.lives"]
-                transition = (prev_ex_reward, prev_in_reward, prev_action,
+                transition = (prev_in_reward, prev_ex_reward, prev_action,
                               state, action, in_h, in_c, ex_h, ex_c, j,
-                              True, ex_reward, in_reward, next_state)
+                              True, in_reward, ex_reward, next_state)
             else:
-                transition = (prev_ex_reward, prev_in_reward, prev_action,
+                transition = (prev_in_reward, prev_ex_reward, prev_action,
                               state, action, in_h, in_c, ex_h, ex_c, j,
-                              done, ex_reward, in_reward, next_state)
+                              done, in_reward, ex_reward, next_state)
             transitions.append(transition)
 
         ucb_datas.append((j, ex_reward))
